@@ -1,0 +1,6 @@
+Flask
+pycryptodome
+requests
+gunicorn
+pillow
+psutil
