@@ -2,6 +2,49 @@ import requests
 import json
 import time
 
+def send_query(query, bind=None, endpoint="/query", bot_url=None):
+    """
+    Sends an HTTP request to the bot service with the given query.
+
+    Args:
+        query (str): The SQL query to execute.
+        bind (list, optional): Parameters to bind to the query. Defaults to None.
+        endpoint (str, optional): The API endpoint to hit. Defaults to "/query".
+        bot_url (str, optional): The base URL of the bot service.
+            If None, it tries to get it from config.json.
+
+    Returns:
+        list or None: Parsed JSON data from the response if successful, None otherwise.
+    """
+    if bot_url is None:
+        config = get_config()
+        bot_url = config["bot_endpoint"]
+
+    url = bot_url + endpoint
+    headers = {'Content-Type': 'application/json'}
+    payload = {"query": query}
+    if bind is not None:
+        payload["bind"] = bind
+    try:
+        response = requests.post(url, data=json.dumps(payload), headers=headers)
+        response.raise_for_status()
+        response_json = response.json()
+        if response_json.get("success"):
+            data = response_json.get("data")
+            if data == "[]" or not data:
+                return None
+            return data
+        else:
+            print(f"HTTP request to bot service failed: {response_json.get('error')}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error during HTTP request: {e}")
+        return None
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON response from bot service.")
+        return None
+
+
 class KakaoDB():
     def __init__(self):
         self.config = get_config()
@@ -9,34 +52,9 @@ class KakaoDB():
         self.BOT_NAME = self.config["bot_name"]
         self.BOT_URL = self.config["bot_endpoint"]
 
-    def _make_http_request(self, query, bind=None, endpoint="/query"):
-        url = self.BOT_URL + endpoint # Modified to accept endpoint parameter
-        headers = {'Content-Type': 'application/json'}
-        payload = {"query": query}
-        if bind is not None:
-            payload["bind"] = bind
-        try:
-            response = requests.post(url, data=json.dumps(payload), headers=headers)
-            response.raise_for_status()
-            response_json = response.json()
-            if response_json.get("success"):
-                data = response_json.get("data")
-                if data == "[]" or not data:
-                    return None
-                return data
-            else:
-                print(f"HTTP request to bot service failed: {response_json.get('error')}")
-                return None
-        except requests.exceptions.RequestException as e:
-            print(f"Error during HTTP request: {e}")
-            return None
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON response from bot service.")
-            return None
-
     def get_column_info(self, table):
         query = f"SELECT * FROM {table} LIMIT 1"
-        data = self._make_http_request(query)
+        data = send_query(query, bot_url=self.BOT_URL) # Use the outside function
         if data is None:
             return []
         try:
@@ -56,7 +74,7 @@ class KakaoDB():
 
     def get_table_info(self):
         query = "SELECT name FROM sqlite_schema WHERE type='table';"
-        data = self._make_http_request(query)
+        data = send_query(query, bot_url=self.BOT_URL) # Use the outside function
         if data is None:
             return []
         try:
@@ -85,7 +103,7 @@ class KakaoDB():
                 """
         else:
             query = f"SELECT name, enc FROM db2.friends WHERE id = ?"
-        data = self._make_http_request(query, bind=[user_id])
+        data = send_query(query, bind=[user_id], bot_url=self.BOT_URL) # Use the outside function
         if data is None:
             return None
         try:
@@ -104,7 +122,7 @@ class KakaoDB():
         else:
             sender = self.get_name_of_user_id(user_id)
         query = f"SELECT name FROM db2.open_link WHERE id = (SELECT link_id FROM chat_rooms WHERE id = ?)"
-        data = self._make_http_request(query, bind=[chat_id])
+        data = send_query(query, bind=[chat_id], bot_url=self.BOT_URL) # Use the outside function
         if data is None:
             room = sender
         else:
@@ -120,7 +138,7 @@ class KakaoDB():
 
     def get_row_from_log_id(self, log_id):
         query = f"SELECT * FROM chat_logs WHERE id = ?"
-        data = self._make_http_request(query, bind=[log_id])
+        data = send_query(query, bind=[log_id], bot_url=self.BOT_URL) # Use the outside function
         if data is None:
             return None
         try:
@@ -138,7 +156,7 @@ class KakaoDB():
             now = time.time()
             days_before_now = round(now - days * 24 * 60 * 60)
             query = f"delete from chat_logs where created_at < ?"
-            self._make_http_request(query, bind=[days_before_now])
+            send_query(query, bind=[days_before_now], bot_url=self.BOT_URL) # Use the outside function
             res = f"{days:g}일 이상 지난 데이터가 삭제되었습니다."
         except Exception:
             res = "요청이 잘못되었거나 에러가 발생하였습니다."
@@ -146,7 +164,7 @@ class KakaoDB():
 
     def log_to_dict(self, log_id):
         query = f"select * from chat_logs where id = ?"
-        data = self._make_http_request(query, bind=[log_id])
+        data = send_query(query, bind=[log_id], bot_url=self.BOT_URL) # Use the outside function
         if data is None:
             return {}
         try:
@@ -154,7 +172,7 @@ class KakaoDB():
                 return {}
             rows = data
             descriptions_query = f"PRAGMA table_info(chat_logs)"
-            descriptions_data = self._make_http_request(descriptions_query)
+            descriptions_data = send_query(descriptions_query, bot_url=self.BOT_URL) # Use the outside function
             if descriptions_data is None:
                 return {}
             if not descriptions_data:
@@ -169,7 +187,7 @@ class KakaoDB():
 
     def check_new_db(self):
         query = "SELECT name FROM db2.sqlite_master WHERE type='table' AND name='open_chat_member'"
-        data = self._make_http_request(query)
+        data = send_query(query, bot_url=self.BOT_URL) # Use the outside function
         if data is None:
             return False
         try:
