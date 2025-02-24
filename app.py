@@ -49,7 +49,7 @@ def py_exec_db():
 
     except Exception as e:
         print(f"Error processing JSON request: {e}")
-        return jsonify({"error": "Failed to process JSON data", "details": str(e)}), 400 # Return error if JSON parsing fails
+        return jsonify({"error": "Failed to process JSON data", "details": str(e)}), 400
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class KakaoDB():
 
     def _make_http_request(self, query, bind=None, endpoint="/query"):
         url = self.BOT_URL + endpoint # Modified to accept endpoint parameter
-        headers = {'Content-type': 'application/json'}
+        headers = {'Content-Type': 'application/json'}
         payload = {"query": query}
         if bind is not None:
             payload["bind"] = bind
@@ -181,7 +181,7 @@ class KakaoDB():
     def decrypt(self, encType, b64_ciphertext, user_id=None):
         decrypt_endpoint = "/decrypt"
         url = self.BOT_URL + decrypt_endpoint
-        headers = {'Content-type': 'application/json'}
+        headers = {'Content-Type': 'application/json'}
         if user_id is None:
             user_id = self.BOT_ID
         payload = {

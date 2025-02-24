@@ -16,17 +16,17 @@ class Replier:
         self.last_sent_time = time.time()
 
     def send_http_request(self, type, data, room):
-        """Sends an HTTP POST request to the bot's reply endpoint."""
         payload = {
             "type": type,
             "room": room,
             "data": data
         }
-        headers = {'Content-type': 'application/json'}
+        headers = {'Content-Type': 'application/json'}
 
         try:
             response = requests.post(self.bot_url, json=payload, headers=headers)
             response.raise_for_status()
+            print()
             print(f"HTTP request successful for room {room}, type {type}")
         except requests.exceptions.RequestException as e:
             print(f"HTTP request failed for room {room}, type {type}: {e}")
