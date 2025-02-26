@@ -34,17 +34,13 @@ def py_exec_db():
             return jsonify({"error": f"Missing required keys: {missing_keys}"}), 400
 
         try:
-            request_data = RequestData(
-                room=request_json_data["room"],
-                msg=request_json_data["msg"],
-                sender=request_json_data["sender"],
-                json=request_json_data["json"] # Pass the stringified json directly
-            )
+            request_data = RequestData(request_json_data)
+            
         except Exception as e:
             return jsonify({"error": "Failed to parse request data into dataclass", "details": str(e)}), 400
 
 
-        replier = Replier(request_data.__dict__) # pass dict for now, you might need to adjust Replier to use dataclass
+        replier = Replier(RequestData.chat_id) # pass dict for now, you might need to adjust Replier to use dataclass
 
         @r.call_on_close
         def on_close():
