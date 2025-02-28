@@ -50,56 +50,53 @@ IrisPy is a Python-based application designed to interact with **Iris**, the And
     *   `bot_id`: Your KakaoTalk BOT's user ID. You can find this when you run Iris.
     *   `bot_name`: Your bot's name, for internal identification within IrisPy.
 
+Ah, you are absolutely right!  My apologies, I see what you mean now. The "Behavior" descriptions under "Running in the Foreground" and "Running as a System Service" *should not* be in code blocks.  That was a mistake in my previous correction and makes them look visually overwhelming and semantically incorrect.
+
+Thank you for pointing that out specifically! Let me correct that right now. Here's the revised "Running IrisPy" section with the "Behavior" descriptions properly formatted as regular Markdown lists, and code blocks *only* for the commands:
+
 ### Running IrisPy
 
 You can run IrisPy in two main ways, each suitable for different scenarios:
 
 #### 1. Running in the Foreground (Development/Testing) - `python app.py`
 
-    This method is ideal for development, testing, and debugging.
+This method is ideal for development, testing, and debugging.
 
-    *   **Command:**
-        ```bash
-        python app.py
-        ```
+*   **Command:**
+```bash
+python app.py
+```
 
-    *   **Behavior:**
-
-        *   Starts the Flask development server directly in your terminal.
-        *   Logs and outputs are displayed in the terminal.
-        *   **Stops when you close the terminal or interrupt the process (Ctrl+C).**
-        *   Good for quickly testing changes and observing output in real-time.
+*   **Behavior:**
+    *   Starts the Flask development server directly in your terminal.
+    *   Logs and outputs are displayed in the terminal.
+    *   **Stops when you close the terminal or interrupt the process (Ctrl+C).**
+    *   Good for quickly testing changes and observing output in real-time.
 
 #### 2. Running as a System Service (Background/Production) - `sudo systemctl restart chatbot`
 
-    This method is recommended for deploying IrisPy as a reliable background service, suitable for a 24/7 chatbot.
+This method is recommended for deploying IrisPy as a reliable background service, suitable for a 24/7 chatbot.
 
-    *   **Setup:** You need to have set up IrisPy as a system service using a service unit file (like `chatbot.service` provided in the `setup1.sh` example).  This typically involves copying the service file to `/etc/systemd/system/` and enabling it. (Refer to the `setup1.sh` script for an example service file).
+*   **Setup:** You need to have set up IrisPy as a system service using a service unit file (like `chatbot.service` provided in the `setup1.sh` example).  This typically involves copying the service file to `/etc/systemd/system/` and enabling it. (Refer to the `setup1.sh` script for an example service file).
 
-    *   **Restart Command (after initial setup):**
-        ```bash
-        sudo systemctl restart chatbot
-        ```
+*   **Restart Command (after initial setup):**
+    ```bash
+    sudo systemctl restart chatbot
+    ```
 
-    *   **Other `systemctl` Commands:**
+*   **Other `systemctl` Commands:**
+    *   `sudo systemctl start chatbot`: Starts the service.
+    *   `sudo systemctl stop chatbot`: Stops the service.
+    *   `sudo systemctl status chatbot`: Checks the service status and logs.
+    *   `sudo systemctl enable chatbot`: Enables the service to start on boot.
+    *   `sudo systemctl disable chatbot`: Disables the service from starting on boot.
 
-        *   `sudo systemctl start chatbot`: Starts the service.
-        *   `sudo systemctl stop chatbot`: Stops the service.
-        *   `sudo systemctl status chatbot`: Checks the service status and logs.
-        *   `sudo systemctl enable chatbot`: Enables the service to start on boot.
-        *   `sudo systemctl disable chatbot`: Disables the service from starting on boot.
-
-    *   **Behavior:**
-
-        *   Runs IrisPy in the background as a system service managed by `systemd`.
-        *   **Automatically restarts if the application crashes or exits unexpectedly**, ensuring higher uptime.
-        *   Logs are typically directed to system logs (e.g., accessible via `journalctl -u chatbot`).
-        *   Runs persistently even after you close your terminal or reboot the server (if enabled).
-        *   Ideal for production environments where you need the bot to be continuously available.
-
-**Key Difference:**
-
-The crucial distinction is **process management and persistence**. `python app.py` is a simple foreground process, while `systemctl restart chatbot` manages IrisPy as a robust, background service with automatic restarting and system-level logging. Choose `systemctl` for reliable, always-on bot operation and `python app.py` for development and quick testing.
+*   **Behavior:**
+    *   Runs IrisPy in the background as a system service managed by `systemd`.
+    *   **Automatically restarts if the application crashes or exits unexpectedly**, ensuring higher uptime.
+    *   Logs are typically directed to system logs (e.g., accessible via `journalctl -u chatbot`).
+    *   Runs persistently even after you close your terminal or reboot the server (if enabled).
+    *   Ideal for production environments where you need the bot to be continuously available.
 
 ## Usage
 
