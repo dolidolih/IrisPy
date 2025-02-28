@@ -8,6 +8,8 @@ from helper.SharedDict import get_shared_state
 import time
 import sys
 
+from dataclass import RequestData # Import the dataclass
+
 app = Flask(__name__)
 db = KakaoDB()
 g = get_shared_state()
@@ -21,26 +23,33 @@ def py_exec_db():
     )
 
     try:
-        request_data = request.get_json()
+        request_json_data = request.get_json()
 
-        if request_data is None:
+        if request_json_data is None:
             return jsonify({"error": "No JSON data received"}), 400
 
         required_keys = ["room", "msg", "sender", "json"]
-        if not all(key in request_data for key in required_keys):
-            missing_keys = [key for key in required_keys if key not in request_data]
+        if not all(key in request_json_data for key in required_keys):
+            missing_keys = [key for key in required_keys if key not in request_json_data]
             return jsonify({"error": f"Missing required keys: {missing_keys}"}), 400
 
-        replier = Replier(request_data)
+        try:
+            request_data = RequestData(request_json_data)
+            
+        except Exception as e:
+            return jsonify({"error": "Failed to parse request data into dataclass", "details": str(e)}), 400
+
+
+        replier = Replier(RequestData.chat_id) # pass dict for now, you might need to adjust Replier to use dataclass
 
         @r.call_on_close
         def on_close():
             response(
-                request_data["room"],
-                request_data["msg"],
-                request_data["sender"],
+                request_data.room,
+                request_data.msg,
+                request_data.sender,
                 replier,
-                request_data["json"],
+                request_data.json, # Now this should be parsed json object (ChatLog dataclass)
                 db,
                 g
             )
