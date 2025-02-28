@@ -15,8 +15,9 @@ IrisPy is a Python-based application designed to interact with **Iris**, the And
 
 1.  **Clone the IrisPy repository** (if you are distributing the code, otherwise just copy the files):
     ```bash
-    git clone [repository-url]
-    cd [irispy-directory]
+    cd ~
+    git clone https://github.com/dolidolih/IrisPy.git
+    cd IrisPy
     ```
 
 2.  **Run Setup Script:**
