@@ -59,9 +59,9 @@ You can run IrisPy in two main ways, each suitable for different scenarios:
    This method is ideal for development, testing, and debugging.
 
    *   **Command:**
-      ```bash
-      python app.py
-      ```
+    ```bash
+    python app.py
+    ```
 
    *   **Behavior:**
       *   Starts the Flask development server directly in your terminal.
@@ -76,9 +76,9 @@ You can run IrisPy in two main ways, each suitable for different scenarios:
    *   **Setup:** You need to have set up IrisPy as a system service using a service unit file (like `chatbot.service` provided in the `setup1.sh` example).  This typically involves copying the service file to `/etc/systemd/system/` and enabling it. (Refer to the `setup1.sh` script for an example service file).
 
    *   **Restart Command (after initial setup):**
-      ```bash
-      sudo systemctl restart chatbot
-      ```
+    ```bash
+    sudo systemctl restart chatbot
+    ```
 
    *   **Other `systemctl` Commands:**
       *   `sudo systemctl start chatbot`: Starts the service.
