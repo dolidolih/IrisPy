@@ -7,10 +7,11 @@ import io
 import requests
 
 class Replier:
-    def __init__(self, chat_id):
+    def __init__(self, request_data):
         self.config = get_config()
         self.bot_url = self.config["bot_endpoint"] + "/reply"
-        self.room = chat_id
+        self.json = request_data["json"]
+        self.room = str(self.json["chat_id"])
         self.queue = []
         self.last_sent_time = time.time()
 
