@@ -27,25 +27,6 @@ echo "Setting up chatbot and dbobserver services"
 current_user=$(whoami)
 current_dir=$(pwd)
 
-# dbobserver.service
-cat <<EOF > dbobserver.service
-[Unit]
-Description=DB Observer for chatbot
-
-[Service]
-User=$current_user
-WorkingDirectory=$current_dir
-ExecStart=$current_dir/venv/bin/python $current_dir/observer.py
-Restart=on-failure
-RestartSec=1s
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo cp dbobserver.service /etc/systemd/system/dbobserver.service
-rm dbobserver.service
-
 # chatbot.service
 cat <<EOF > chatbot.service
 [Unit]
@@ -67,7 +48,6 @@ rm chatbot.service
 
 
 # Enable chatbot and dbobserver services (but do not start yet)
-sudo systemctl enable dbobserver.service
 sudo systemctl enable chatbot.service
 
 # 4. Set up binder drivers
